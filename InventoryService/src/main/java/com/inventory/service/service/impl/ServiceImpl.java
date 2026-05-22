@@ -18,14 +18,19 @@ public class ServiceImpl implements InventoryService{
 	        this.inventoryRepository = inventoryRepository;
 	    }
 
-	@Override
-	public Inventory createInventory(Inventory inventory) {
-		return inventoryRepository.save(inventory);
-	}
+	 
+	 @Override
+		public Inventory createInventory(Inventory inventory) {
+		 
+			return inventoryRepository.save(inventory);
+		}
 
 	@Override
-	public Optional<Inventory> getinventoryById(Long id) {
+	public Optional<Inventory> getInventoryById(Long id) {
 		return inventoryRepository.findById(id);
 	}
+
+
+	
 
 }

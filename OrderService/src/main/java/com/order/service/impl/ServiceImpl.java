@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+
+import com.order.dto.Inventory;
 import com.order.dto.PaymentResponse;
 import com.order.entity.Order;
 import com.order.repository.OrderRepository;
@@ -18,11 +20,28 @@ public class ServiceImpl implements OrderService{
 	
 	@Autowired
 	private OrderRepository orderRepository;
+	
 	@Autowired
 	private RestTemplate restTemplate;
 
 	@Override
 	public Order createOrder(Order order) {
+		
+		
+		
+		
+		Inventory inventory = restTemplate.getForObject("http://localhost:2223/inventory/"
+				+ order.getProductId(),
+				Inventory.class);
+		
+		if(inventory.getQuantity() <= 0) {
+			
+			order.setStatus("OUT OF STOCK");
+			
+			return orderRepository.save(order);
+			
+		}
+		
 	     String response = restTemplate.postForObject("http://localhost:2224/payment/pay",
 				order, 
 				String.class);

@@ -34,7 +34,7 @@ public class InventoryController {
 	}
 	
 	@GetMapping("/{id}")
-	public Optional<Inventory> getinventoryById(@PathVariable Long id) {
-		return inventoryService.getinventoryById(id);
+	public Optional<Inventory> getInventoryById(@PathVariable Long id) {
+		return inventoryService.getInventoryById(id);
 	}
 }
