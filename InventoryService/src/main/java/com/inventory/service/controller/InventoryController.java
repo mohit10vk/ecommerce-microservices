@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,5 +37,10 @@ public class InventoryController {
 	@GetMapping("/{id}")
 	public Optional<Inventory> getInventoryById(@PathVariable Long id) {
 		return inventoryService.getInventoryById(id);
+	}
+	
+	@PutMapping("/{id}/{quantity}")
+	public Inventory updateInventory(@PathVariable Long id,@PathVariable int quantity) {
+		return inventoryService.updateInventory(id, quantity);
 	}
 }

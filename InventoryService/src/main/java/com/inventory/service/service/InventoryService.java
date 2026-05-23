@@ -10,5 +10,7 @@ public interface InventoryService {
 	
 	Inventory createInventory(Inventory inventory);
 	
+	Inventory updateInventory(Long id, int quantity);
+	
 	Optional<Inventory> getInventoryById(Long id);
 }

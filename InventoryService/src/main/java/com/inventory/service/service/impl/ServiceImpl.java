@@ -31,6 +31,17 @@ public class ServiceImpl implements InventoryService{
 	}
 
 
+	@Override
+	public Inventory updateInventory(Long id, int quantity) {
+		
+		Inventory inventory = inventoryRepository.findById(id).orElse(null);
+		
+		inventory.setQuantity(inventory.getQuantity() - quantity);
+		
+		return inventoryRepository.save(inventory);
+	}
+
+
 	
 
 }

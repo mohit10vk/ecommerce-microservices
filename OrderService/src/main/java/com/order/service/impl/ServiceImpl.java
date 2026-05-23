@@ -28,8 +28,6 @@ public class ServiceImpl implements OrderService{
 	public Order createOrder(Order order) {
 		
 		
-		
-		
 		Inventory inventory = restTemplate.getForObject("http://localhost:2223/inventory/"
 				+ order.getProductId(),
 				Inventory.class);
@@ -45,6 +43,13 @@ public class ServiceImpl implements OrderService{
 	     String response = restTemplate.postForObject("http://localhost:2224/payment/pay",
 				order, 
 				String.class);
+	     
+	     restTemplate.put(
+	             "http://localhost:2223/inventory/"
+	             + order.getProductId()
+	             + "/"
+	             + order.getQuantity(),
+	             null);
 		
              order.setStatus(response);
 	   return orderRepository.save(order);
