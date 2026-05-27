@@ -28,11 +28,11 @@ public class ServiceImpl implements OrderService{
 	public Order createOrder(Order order) {
 		
 		
-		Inventory inventory = restTemplate.getForObject("http://localhost:2223/inventory/"
+		Inventory inventory = restTemplate.getForObject("http://INVENTORYSERVICE/inventory/"
 				+ order.getProductId(),
 				Inventory.class);
 		
-		if(inventory.getQuantity() <= 0) {
+		if(inventory == null || inventory.getQuantity() <= 0) {
 			
 			order.setStatus("OUT OF STOCK");
 			
@@ -40,12 +40,12 @@ public class ServiceImpl implements OrderService{
 			
 		}
 		
-	     String response = restTemplate.postForObject("http://localhost:2224/payment/pay",
+	     String response = restTemplate.postForObject("http://PAYMENTSERVICE/payment/pay",
 				order, 
 				String.class);
 	     
 	     restTemplate.put(
-	             "http://localhost:2223/inventory/"
+	             "http://INVENTORYSERVICE/inventory/"
 	             + order.getProductId()
 	             + "/"
 	             + order.getQuantity(),
