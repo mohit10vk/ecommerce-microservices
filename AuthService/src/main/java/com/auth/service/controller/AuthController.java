@@ -1,9 +1,11 @@
 package com.auth.service.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth.service.dto.LoginRequest;
@@ -29,4 +31,13 @@ public class AuthController {
         return "Invalid Credentials";
     }
 	
+	 @GetMapping("/validate")
+	    public String validate(@RequestParam String token) {
+
+	        if(jwtService.validateToken(token)) {
+	            return "VALID TOKEN";
+	        }
+
+	        return "INVALID TOKEN";
+	    }
 }
