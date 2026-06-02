@@ -3,9 +3,11 @@ package com.order.service.impl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
+import com.order.client.InventoryClient;
+import com.order.client.PaymentClient;
 import com.order.dto.Inventory;
 import com.order.dto.PaymentResponse;
 import com.order.entity.Order;
@@ -22,15 +24,21 @@ public class ServiceImpl implements OrderService{
 	private OrderRepository orderRepository;
 	
 	@Autowired
-	private RestTemplate restTemplate;
+	private InventoryClient inventoryClient;
 
+	@Autowired
+	private PaymentClient paymentClient;
+	
 	@Override
 	public Order createOrder(Order order) {
 		
 		
-		Inventory inventory = restTemplate.getForObject("http://INVENTORYSERVICE/inventory/"
-				+ order.getProductId(),
-				Inventory.class);
+		Optional<Inventory> inventoryOpt =
+		        inventoryClient.getInventoryById(
+		        order.getProductId());
+
+		Inventory inventory =
+		        inventoryOpt.orElse(null);
 		
 		if(inventory == null || inventory.getQuantity() <= 0) {
 			
@@ -40,16 +48,12 @@ public class ServiceImpl implements OrderService{
 			
 		}
 		
-	     String response = restTemplate.postForObject("http://PAYMENTSERVICE/payment/pay",
-				order, 
-				String.class);
+		String response =
+		        paymentClient.doPayment();
 	     
-	     restTemplate.put(
-	             "http://INVENTORYSERVICE/inventory/"
-	             + order.getProductId()
-	             + "/"
-	             + order.getQuantity(),
-	             null);
+		inventoryClient.updateInventory(
+		        order.getProductId(),
+		        order.getQuantity());
 		
              order.setStatus(response);
 	   return orderRepository.save(order);
