@@ -8,17 +8,20 @@ import org.springframework.stereotype.Service;
 
 import com.order.client.InventoryClient;
 import com.order.client.PaymentClient;
+import com.order.config.AppConfig;
 import com.order.dto.Inventory;
 import com.order.dto.PaymentResponse;
 import com.order.entity.Order;
+import com.order.event.OrderCreatedEvent;
 import com.order.repository.OrderRepository;
+import com.order.service.OrderEventProducer;
 import com.order.service.OrderService;
-
-
 
 
 @Service
 public class ServiceImpl implements OrderService{
+
+    private final AppConfig appConfig;
 	
 	@Autowired
 	private OrderRepository orderRepository;
@@ -28,6 +31,13 @@ public class ServiceImpl implements OrderService{
 
 	@Autowired
 	private PaymentClient paymentClient;
+	
+	@Autowired
+	private OrderEventProducer orderEventProducer;
+
+    ServiceImpl(AppConfig appConfig) {
+        this.appConfig = appConfig;
+    }
 	
 	@Override
 	public Order createOrder(Order order) {
@@ -55,8 +65,15 @@ public class ServiceImpl implements OrderService{
 		        order.getProductId(),
 		        order.getQuantity());
 		
-             order.setStatus(response);
-	   return orderRepository.save(order);
+		order.setStatus(response);
+
+		Order savedOrder = orderRepository.save(order);
+
+		 orderEventProducer.publish( new OrderCreatedEvent( savedOrder.getOrderId(),
+		  String.valueOf(savedOrder.getProductId())) );
+		 
+
+		return savedOrder;
 	}
 
 	@Override
